@@ -80,6 +80,78 @@ Rationale for every non-obvious technical choice made during development.
 
 ---
 
+## D-12 · Next.js 16 renamed `middleware.ts` → `proxy.ts`
+
+**Decision:** The route protection file is `src/proxy.ts`, not `src/middleware.ts`.
+
+**Why:** Next.js 16 deprecated the `middleware.ts` file convention and replaced it with `proxy.ts`. Keeping `middleware.ts` produces a build warning and the export format changed to require a default export (not a named `middleware` export).
+
+**How to apply:** Any doc or reference to "middleware.ts" should be read as "proxy.ts" in this project.
+
+---
+
+## D-13 · Auth config split: `auth.config.ts` + `auth.ts`
+
+**Decision:** Auth configuration is split into two files. `auth.config.ts` is edge-safe and contains the `authorized` (RBAC), `jwt`, and `session` callbacks. `auth.ts` spreads it and adds the Credentials provider.
+
+**Why:** The Credentials provider's `authorize` function may reference Node.js APIs (bcrypt, database drivers). These cannot run in the Edge runtime used by `proxy.ts`. By separating the config, the middleware imports only the edge-safe subset. This is the official NextAuth v5 pattern.
+
+---
+
+## D-14 · MSW seed data is a mutable in-memory array
+
+**Decision:** `seedUsers` (and `seedTenants` for the `isActive` flag) are plain exported arrays. POST/PUT/DELETE handlers mutate them directly.
+
+**Why:** MSW has no persistence layer. Mutations need to survive across requests within a single browser session (until page refresh). Mutable module-level arrays are the simplest mechanism. Data resets on refresh, which is intentional and documented.
+
+**Trade-off:** Multiple browser tabs share the same Service Worker scope but separate module states — mutations in one tab are not reflected in another. Acceptable for a demo.
+
+---
+
+## D-15 · Deterministic analytics generation (Park-Miller PRNG)
+
+**Decision:** All analytics data is generated deterministically from a seed derived from `orgId + dateRange`. The same inputs always produce the same output.
+
+**Why:** Prevents confusing data changes on re-render or component remount. Makes the UI predictable for demos. Avoids the need for a database or even a static fixture file — any orgId that gets added automatically gets plausible data.
+
+---
+
+## D-16 · `SessionSync` as a renderless component (not a hook)
+
+**Decision:** The NextAuth → Redux bridge is a renderless component (`<SessionSync />`) placed inside `AppProviders`, rather than a custom hook called from each page.
+
+**Why:** A hook would require every page component to call it, creating a footgun where pages added later forget to sync the session. A single component in the provider tree guarantees it always runs.
+
+---
+
+## D-17 · `MSWProvider` delays rendering until service worker is registered
+
+**Decision:** `MSWProvider` returns `null` until `worker.start()` resolves (~50ms on first load).
+
+**Why:** Without this guard, the first few React Query fetches race against MSW registration and hit the real network (returning 404). The brief null state is invisible in practice but prevents confusing error states.
+
+**Trade-off:** In production `isDev = false` so the guard is skipped entirely — no performance impact.
+
+---
+
+## D-10 · axios instead of native `fetch` for the HTTP client
+
+**Decision:** All API calls go through a central `axiosInstance` (not the native `fetch` or a custom `apiFetch` wrapper).
+
+**Why:** axios provides a cleaner interceptor API for injecting headers on every request, transforming error shapes, and handling 401 redirects — all in one place. The equivalent with `fetch` requires manual wrapping and is more verbose to test.
+
+**How the circular dependency is avoided:** The request interceptor lazily `require()`s the Redux store at call-time rather than at module init time. This prevents `axiosInstance → store → slice → axiosInstance` circular import during module resolution.
+
+---
+
+## D-11 · `TenantThemeProvider` reads from Redux (not from session)
+
+**Decision:** `TenantThemeProvider` reads `activeOrgId` and `orgs` from Redux state, not from `useSession()`.
+
+**Why:** The org list (including `primaryColor`) is stored in Redux `tenantSlice` alongside `activeOrgId`. Reading both from the same source keeps the logic consistent and avoids a second hook dependency. The session JWT does not carry the full `Tenant` objects (only `orgId` and `role` in `OrgMembership[]`), so the session alone is insufficient for theming.
+
+---
+
 ## D-09 · Role rank comparison (numeric) in `useRole`
 
 **Decision:** Roles are mapped to integers (`super_admin=4, admin=3, manager=2, viewer=1`) and `hasRole(required)` checks `ROLE_RANK[current] >= ROLE_RANK[required]`.

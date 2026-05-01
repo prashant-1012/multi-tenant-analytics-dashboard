@@ -32,21 +32,41 @@
 | NextAuth config (credentials provider, JWT strategy) | ✅ | 5 mock users seeded |
 | NextAuth API route | ✅ | /api/auth/[...nextauth] |
 | next-auth type augmentation | ✅ | orgs, activeOrgId, avatarUrl on Session |
-| AppProviders wrapper (Redux+RQ+NextAuth+Theme+Tooltip) | ✅ | |
+| AppProviders wrapper (Redux+RQ+NextAuth+Theme+Tooltip) | ✅ | Now includes TenantThemeProvider |
 | Root layout updated | ✅ | Uses AppProviders, suppressHydrationWarning |
 | lib/utils.ts — cn + formatters | ✅ | formatCurrency, formatNumber, formatPercent, formatDate |
-| lib/queryClient.ts | ✅ | 30s staleTime + refetchInterval |
+| lib/queryClient.ts | ✅ | 30s staleTime + refetchInterval; mutation retry=0 |
+| lib/axiosInstance.ts | ✅ | axios + request interceptor (X-Org-Id) + response interceptor (ApiError, 401 redirect) |
+| providers/TenantThemeProvider.tsx | ✅ | Injects --tenant-primary CSS var on org switch |
+| components/shared/ThemeToggle.tsx | ✅ | Sun/moon toggle; uses next-themes useTheme |
+| globals.css — --color-tenant-primary token | ✅ | Registered in @theme block; usable as bg-tenant-primary |
 | .env.local | ✅ | NEXTAUTH_SECRET + NEXTAUTH_URL |
 | .prettierrc | ✅ | prettier-plugin-tailwindcss |
-| Production build — zero errors | ✅ | npm run build passes |
+| Production build — zero errors | ✅ | npm run build + tsc --noEmit both pass |
 
 ## Phase 2 — Core Infrastructure
 
 | Task | Status | Notes |
 |---|---|---|
-| MSW handlers + seed data | ⬜ | Next step |
-| Next.js middleware (auth + RBAC) | ⬜ | |
-| TenantThemeProvider | ⬜ | |
+| auth.config.ts (edge-safe, authorized callback with RBAC) | ✅ | Splits provider from auth logic; middleware-safe |
+| auth.ts refactored to spread authConfig | ✅ | Only owns Credentials provider + mock users |
+| authSlice (userId in Redux) | ✅ | Enables sync X-User-Id header in axiosInstance |
+| store.ts — authReducer added | ✅ | |
+| axiosInstance.ts — X-User-Id header added, direct import | ✅ | Both X-Org-Id + X-User-Id injected on every request |
+| MSW seed data — tenants (3) | ✅ | Acme/Globex/Initech; different plans + colours |
+| MSW seed data — users (5) | ✅ | Mutable in-memory array; mutations persist until refresh |
+| MSW seed data — analytics generators | ✅ | Deterministic Park-Miller PRNG; seeded by orgId |
+| MSW helpers (resolveContext, hasRole, Errors, parseDateRange) | ✅ | Central RBAC for all handlers |
+| MSW handler — analytics (kpis, features, events, drill-down) | ✅ | org-scoped, role-checked, tenant-active-checked |
+| MSW handler — users (GET/POST/PUT/DELETE) | ✅ | Full RBAC + self-removal guard + role-escalation guard |
+| MSW handler — tenants (GET list, GET by id, PUT) | ✅ | super_admin only; PUT supports isActive toggle |
+| MSW handler — reports/export (CSV) | ✅ | manager+; validates metrics param; returns text/csv |
+| MSW browser.ts + public/mockServiceWorker.js | ✅ | `npx msw init public/` run |
+| MSWProvider (delays render until worker active) | ✅ | pass-through in production |
+| SessionSync (NextAuth → Redux bridge) | ✅ | Syncs userId, activeOrgId, tenant list on session change |
+| AppProviders — MSWProvider + SessionSync wired in | ✅ | Correct provider nesting order documented |
+| proxy.ts (Next.js 16 Edge Proxy, RBAC via authConfig) | ✅ | middleware.ts deprecated in Next.js 16 → renamed to proxy.ts |
+| Production build — zero errors | ✅ | tsc --noEmit ✅ · npm run build ✅ · Proxy listed in build output |
 
 ## Phase 3 — Auth & Shell
 

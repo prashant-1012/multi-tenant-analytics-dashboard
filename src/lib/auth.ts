@@ -1,8 +1,11 @@
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
+import { authConfig } from './auth.config'
 import type { SessionUser } from '@/types/auth'
 
-// Mock user store — replaced by MSW/real API later
+// ─── Mock credential store ────────────────────────────────────────────────────
+// Password field is intentionally stripped before the token is issued.
+// In production this would be a DB lookup with bcrypt.compare().
 const MOCK_USERS: (SessionUser & { password: string })[] = [
   {
     id: 'user_001',
@@ -56,6 +59,7 @@ const MOCK_USERS: (SessionUser & { password: string })[] = [
 ]
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  ...authConfig,
   providers: [
     Credentials({
       credentials: {
@@ -64,35 +68,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       async authorize(credentials) {
         const user = MOCK_USERS.find(
-          (u) => u.email === credentials?.email && u.password === credentials?.password
+          (u) =>
+            u.email === credentials?.email &&
+            u.password === credentials?.password
         )
         if (!user) return null
+        // Strip password before returning — NextAuth embeds this in the JWT
         const { password: _, ...safeUser } = user
         return safeUser as SessionUser & { id: string }
       },
     }),
   ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        const u = user as SessionUser
-        token.id = u.id
-        token.orgs = u.orgs
-        token.activeOrgId = u.activeOrgId
-        token.avatarUrl = u.avatarUrl
-      }
-      return token
-    },
-    async session({ session, token }) {
-      session.user.id = token.id as string
-      session.user.orgs = token.orgs as SessionUser['orgs']
-      session.user.activeOrgId = token.activeOrgId as string
-      session.user.avatarUrl = token.avatarUrl as string | null
-      return session
-    },
-  },
-  pages: {
-    signIn: '/login',
-  },
-  session: { strategy: 'jwt' },
 })
