@@ -72,12 +72,18 @@
 
 | Task | Status | Notes |
 |---|---|---|
-| Login page | ⬜ | |
-| Dashboard shell layout (sidebar + header) | ⬜ | |
-| Sidebar navigation | ⬜ | |
-| OrgSwitcher component | ⬜ | |
-| Dark/light mode toggle | ⬜ | |
-| Role badge component | ⬜ | |
+| Login page | ✅ | `(auth)/login/page.tsx` + `LoginForm.tsx` (Suspense boundary for useSearchParams) |
+| Auth layout | ✅ | `(auth)/layout.tsx` — minimal pass-through |
+| Role-based redirect after login | ✅ | proxy.ts `authorized` callback handles it; `signIn(redirect:false)` + `router.push` on client |
+| RoleGuard component | ✅ | `components/shared/RoleGuard.tsx` — renders children only if `hasRole(required)` |
+| RoleBadge component | ✅ | `components/shared/RoleBadge.tsx` — colour-coded per role |
+| OrgSwitcher | ✅ | `components/dashboard/OrgSwitcher.tsx` — dispatch `setActiveOrg` + `invalidateQueries()` |
+| Sidebar (role-based nav) | ✅ | `components/dashboard/Sidebar.tsx` — items filtered by `hasRole(minRole)` at render |
+| Header (user info + theme toggle) | ✅ | `components/dashboard/Header.tsx` — avatar, name, role badge, sign-out |
+| Dashboard shell layout | ✅ | `(dashboard)/layout.tsx` — fixed sidebar + scrollable main |
+| Placeholder pages (overview, analytics, reports, users, admin/*) | ✅ | All routable; real content in Phase 4/5 |
+| Root page redirect | ✅ | `app/page.tsx` → `redirect('/overview')` |
+| Production build — all 11 routes | ✅ | `npm run build` passes; `ƒ Proxy (Middleware)` confirmed |
 
 ## Phase 4 — Dashboard & Analytics
 
