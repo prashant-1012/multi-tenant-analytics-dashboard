@@ -89,14 +89,16 @@
 
 | Task | Status | Notes |
 |---|---|---|
-| KPI cards | ⬜ | |
-| DAU line chart | ⬜ | |
-| Feature usage bar chart | ⬜ | |
-| Date range picker | ⬜ | |
-| Overview page | ⬜ | |
-| Analytics — feature usage page | ⬜ | |
-| Analytics — events page | ⬜ | |
-| Drill-down page | ⬜ | |
+| KPI cards | ✅ | `components/dashboard/KpiCard.tsx` — value, % change, sparkline |
+| DAU line chart | ✅ | `components/charts/DauLineChart.tsx` — Recharts LineChart, tenant primary color |
+| Feature usage bar chart | ✅ | `components/charts/FeatureBarChart.tsx` — horizontal BarChart, top 5 |
+| Date range picker | ✅ | `components/dashboard/DateRangePicker.tsx` — 7d / 30d / 90d presets |
+| Overview page | ✅ | 4 KPI cards + DAU trend + feature bar chart; 30s polling |
+| Analytics — feature usage page | ✅ | Tab in `/analytics` — table + bar chart, category filter, sparkline trend |
+| Analytics — events page | ✅ | Tab in `/analytics` — multi-line chart + table, name filter, drill-down link |
+| Drill-down page | ✅ | `/analytics/[eventId]` — KPI row, by-day bar chart, per-user table, property breakdown |
+| Supporting infra | ✅ | `lib/apiFetch.ts`, `hooks/useAnalytics.ts` (useKpis/useFeatures/useEvents/useEventDrillDown), `charts/EventLineChart.tsx`, `charts/SparklineChart.tsx` |
+| Production build — all 11 routes | ✅ | `tsc --noEmit` ✅ · `npm run build` ✅ · `/analytics/[eventId]` dynamic ƒ confirmed |
 
 ## Phase 5 — Management & Export
 
