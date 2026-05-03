@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import {
   DropdownMenu,
@@ -34,6 +35,7 @@ import { useRole } from '@/hooks/useRole'
 import { useSession } from 'next-auth/react'
 import { formatDate } from '@/lib/utils'
 import { UserPlus, Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 import type { Role } from '@/types/auth'
 
 const ASSIGNABLE_ROLES: Role[] = ['viewer', 'manager', 'admin']
@@ -54,6 +56,8 @@ export default function UsersPage() {
   const [form, setForm] = useState({ name: '', email: '', role: 'viewer' as Role })
   const [formError, setFormError] = useState('')
 
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null)
+
   const canManage = hasRole('admin')
   const currentUserId = session?.user?.id
 
@@ -63,9 +67,23 @@ export default function UsersPage() {
       await inviteUser.mutateAsync(form)
       setInviteOpen(false)
       setForm({ name: '', email: '', role: 'viewer' })
+      toast.success('User invited', { description: `${form.name} has been added to the organisation` })
     } catch (err: unknown) {
       const e = err as { message?: string }
       setFormError(e?.message ?? 'Failed to invite user')
+    }
+  }
+
+  async function handleConfirmDelete() {
+    if (!deleteTarget) return
+    try {
+      await removeUser.mutateAsync(deleteTarget.id)
+      toast.success('User removed', { description: `${deleteTarget.name} has been removed` })
+    } catch (err: unknown) {
+      const e = err as { message?: string }
+      toast.error('Failed to remove user', { description: e?.message })
+    } finally {
+      setDeleteTarget(null)
     }
   }
 
@@ -155,8 +173,7 @@ export default function UsersPage() {
                           variant="ghost"
                           size="icon"
                           className="text-destructive hover:text-destructive h-8 w-8"
-                          onClick={() => removeUser.mutate(u.id)}
-                          disabled={removeUser.isPending}
+                          onClick={() => setDeleteTarget({ id: u.id, name: u.name })}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -225,6 +242,28 @@ export default function UsersPage() {
               disabled={!form.name || !form.email || inviteUser.isPending}
             >
               {inviteUser.isPending ? 'Inviting…' : 'Invite'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete confirmation dialog */}
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Remove user</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to remove <strong>{deleteTarget?.name}</strong> from this organisation? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={removeUser.isPending}
+            >
+              {removeUser.isPending ? 'Removing…' : 'Remove'}
             </Button>
           </DialogFooter>
         </DialogContent>

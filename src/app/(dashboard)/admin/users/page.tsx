@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
@@ -37,7 +37,13 @@ export default function AdminUsersPage() {
   const { data: tenantsData, isLoading: tenantsLoading } = useTenants()
   const [selectedOrgId, setSelectedOrgId] = useState<string>('')
 
-  // Fetch users for the selected org by temporarily using that org's header
+  // Set default selection once tenants load so Select can match the label
+  useEffect(() => {
+    if (!selectedOrgId && tenantsData && activeOrgId) {
+      setSelectedOrgId(activeOrgId)
+    }
+  }, [tenantsData, activeOrgId, selectedOrgId])
+
   const targetOrgId = selectedOrgId || activeOrgId || ''
   const { data: usersData, isLoading: usersLoading } = useQuery<{ users: OrgUser[] }>({
     queryKey: ['admin-users', targetOrgId],
@@ -62,7 +68,7 @@ export default function AdminUsersPage() {
           <Skeleton className="h-9 w-48" />
         ) : (
           <Select
-            value={selectedOrgId || activeOrgId || ''}
+            value={selectedOrgId}
             onValueChange={(v) => setSelectedOrgId(v ?? '')}
           >
             <SelectTrigger className="w-48">
