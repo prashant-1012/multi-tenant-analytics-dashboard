@@ -8,7 +8,8 @@ import { DateRangePicker } from '@/components/dashboard/DateRangePicker'
 import { useRole } from '@/hooks/useRole'
 import { useAppSelector } from '@/hooks/redux'
 import { presetToRange, type DatePreset } from '@/hooks/useAnalytics'
-import { Download, Lock } from 'lucide-react'
+import { Check, Download, Lock } from 'lucide-react'
+import { toast } from 'sonner'
 
 type MetricKey = 'dau' | 'mau' | 'revenue' | 'conversions' | 'features'
 
@@ -61,8 +62,14 @@ export default function ReportsPage() {
         }
       )
       if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.message ?? 'Export failed')
+        let message = 'Export failed'
+        try {
+          const err = await res.json()
+          message = err.message ?? message
+        } catch {
+          message = `Export failed (${res.status})`
+        }
+        throw new Error(message)
       }
       const csv = await res.text()
       const blob = new Blob([csv], { type: 'text/csv' })
@@ -72,6 +79,7 @@ export default function ReportsPage() {
       a.download = `report-${orgId}-${from}.csv`
       a.click()
       URL.revokeObjectURL(url)
+      toast.success('Report downloaded', { description: `report-${orgId}-${from}.csv` })
     } catch (err: unknown) {
       const e = err as { message?: string }
       setError(e?.message ?? 'Export failed')
@@ -108,7 +116,9 @@ export default function ReportsPage() {
                     className="flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-colors data-[selected=true]:border-primary data-[selected=true]:bg-primary/5 hover:bg-accent"
                     data-selected={on}
                   >
-                    <div className={`h-4 w-4 shrink-0 rounded border-2 transition-colors ${on ? 'border-primary bg-primary' : 'border-muted-foreground'}`} />
+                    <div className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 transition-colors ${on ? 'border-primary bg-primary' : 'border-muted-foreground'}`}>
+                      {on && <Check className="h-3 w-3 text-primary-foreground" strokeWidth={3} />}
+                    </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium">{m.label}</p>
                       <p className="text-muted-foreground text-xs">{m.description}</p>
