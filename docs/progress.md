@@ -112,6 +112,16 @@
 | Bug fix — DropdownMenuLabel Base UI context | ✅ | Wrapped `MenuPrimitive.GroupLabel` in `MenuPrimitive.Group` inside `DropdownMenuLabel` — fixes MenuGroupRootContext crash in OrgSwitcher + Header |
 | Production build — all 11 routes | ✅ | `tsc --noEmit` ✅ · `npm run build` ✅ · all routes confirmed |
 
+## Gap-fill — Feature Completeness Pass
+
+| Task | Status | Notes |
+|---|---|---|
+| KPI cards — % change for all 4 metrics | ✅ | Added `dauGrowth`, `mauGrowth`, `conversionRateGrowth` to `KpiSummary` type + MSW generator; all 4 cards now show trend arrow + % |
+| Feature drill-down link | ✅ | Feature table rows now link to `/analytics/[featureId]`; MSW generator extended with `ALL_DRILLDOWN_DEFS` to resolve both event and feature IDs |
+| Tenant detail panel | ✅ | Click any tenant row to inline-expand: shows slug, plan, member count, created date, primary colour swatch |
+| Reports viewer UX | ✅ | Viewers see a locked state card (lock icon + message) instead of disabled checkboxes; canExport branch hides the entire metric selection UI |
+| Production build — gap-fill pass | ✅ | `tsc --noEmit` ✅ · `npm run build` ✅ |
+
 ---
 
 ## Decisions Log

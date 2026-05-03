@@ -38,11 +38,13 @@ export default function OverviewPage() {
             <KpiCard
               title="Daily Active Users"
               value={formatNumber(kpis.dauCurrent)}
+              change={kpis.dauGrowth}
               sparkline={kpis.dau}
             />
             <KpiCard
               title="Monthly Active Users"
               value={formatNumber(kpis.mau)}
+              change={kpis.mauGrowth}
             />
             <KpiCard
               title="Revenue"
@@ -52,6 +54,7 @@ export default function OverviewPage() {
             <KpiCard
               title="Conversion Rate"
               value={formatPercent(kpis.conversionRate)}
+              change={kpis.conversionRateGrowth}
             />
           </>
         ) : null}

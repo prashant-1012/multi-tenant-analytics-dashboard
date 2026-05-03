@@ -78,11 +78,14 @@ export function generateKpis(orgId: string, from: string, to: string): KpiSummar
   }))
 
   const dauCurrent = dauSeries[dauSeries.length - 1]?.value ?? 0
+  const dauGrowth = parseFloat((rng.float(-8, 20)).toFixed(1))
   const mau = Math.round(dauCurrent * rng.float(8, 12))
+  const mauGrowth = parseFloat((rng.float(-5, 18)).toFixed(1))
   const revenue = Math.round(scale.revenueBase * rng.float(0.9, 1.1))
   const revenueGrowth = parseFloat((rng.float(-5, 15)).toFixed(1))
   const conversions = rng.int(80, 300)
   const conversionRate = parseFloat((rng.float(2, 8)).toFixed(1))
+  const conversionRateGrowth = parseFloat((rng.float(-3, 12)).toFixed(1))
   const activeFeatures = rng.int(6, 12)
 
   return {
@@ -90,11 +93,14 @@ export function generateKpis(orgId: string, from: string, to: string): KpiSummar
     period: { from, to },
     dau: dauSeries,
     dauCurrent,
+    dauGrowth,
     mau,
+    mauGrowth,
     revenue,
     revenueGrowth,
     conversions,
     conversionRate,
+    conversionRateGrowth,
     activeFeatures,
   }
 }
@@ -170,14 +176,22 @@ export function generateEvents(orgId: string, from: string, to: string): EventSe
 // ─── Drill-down generator ─────────────────────────────────────────────────────
 import { seedUsers } from './users'
 
+// Combined lookup: events + features both resolve to DrillDownData
+const ALL_DRILLDOWN_DEFS: { id: string; name: string }[] = [
+  ...EVENT_DEFINITIONS.map((e) => ({ id: e.eventId, name: e.eventName })),
+  ...FEATURE_DEFINITIONS.map((f) => ({ id: f.featureId, name: f.featureName })),
+]
+
 export function generateDrillDown(
   orgId: string,
   eventId: string,
   from: string,
   to: string
 ): DrillDownData | null {
-  const eventDef = EVENT_DEFINITIONS.find((e) => e.eventId === eventId)
-  if (!eventDef) return null
+  const def = ALL_DRILLDOWN_DEFS.find((d) => d.id === eventId)
+  if (!def) return null
+  // keep legacy variable name so the rest of the function is unchanged
+  const eventDef = { eventId: def.id, eventName: def.name }
 
   const rng = makeRng(hashOrgId(orgId + eventId + from))
   const scale = getScale(orgId)

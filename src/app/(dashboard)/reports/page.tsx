@@ -8,8 +8,7 @@ import { DateRangePicker } from '@/components/dashboard/DateRangePicker'
 import { useRole } from '@/hooks/useRole'
 import { useAppSelector } from '@/hooks/redux'
 import { presetToRange, type DatePreset } from '@/hooks/useAnalytics'
-import { apiFetch } from '@/lib/apiFetch'
-import { Download } from 'lucide-react'
+import { Download, Lock } from 'lucide-react'
 
 type MetricKey = 'dau' | 'mau' | 'revenue' | 'conversions' | 'features'
 
@@ -91,55 +90,65 @@ export default function ReportsPage() {
         <DateRangePicker value={preset} onChange={setPreset} />
       </div>
 
-      {!canExport && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
-          You need <strong>manager</strong> role or above to export reports.
-        </div>
+      {canExport ? (
+        <>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Select metrics</CardTitle>
+              <CardDescription>Choose one or more metrics to include in the CSV</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {METRICS.map((m) => {
+                const on = selected.has(m.key)
+                return (
+                  <button
+                    key={m.key}
+                    type="button"
+                    onClick={() => toggleMetric(m.key)}
+                    className="flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-colors data-[selected=true]:border-primary data-[selected=true]:bg-primary/5 hover:bg-accent"
+                    data-selected={on}
+                  >
+                    <div className={`h-4 w-4 shrink-0 rounded border-2 transition-colors ${on ? 'border-primary bg-primary' : 'border-muted-foreground'}`} />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">{m.label}</p>
+                      <p className="text-muted-foreground text-xs">{m.description}</p>
+                    </div>
+                    {on && <Badge variant="secondary" className="text-xs">included</Badge>}
+                  </button>
+                )
+              })}
+            </CardContent>
+          </Card>
+
+          {error && <p className="text-destructive text-sm">{error}</p>}
+
+          <div className="flex justify-end">
+            <Button
+              onClick={handleExport}
+              disabled={isExporting || selected.size === 0}
+              className="gap-2"
+            >
+              <Download className="h-4 w-4" />
+              {isExporting ? 'Exporting…' : 'Export CSV'}
+            </Button>
+          </div>
+        </>
+      ) : (
+        <Card>
+          <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
+            <div className="bg-muted rounded-full p-4">
+              <Lock className="text-muted-foreground h-6 w-6" />
+            </div>
+            <div>
+              <p className="font-medium">Export not available</p>
+              <p className="text-muted-foreground mt-1 text-sm">
+                You need <strong>manager</strong> role or above to export reports.
+                Contact your organisation admin to request access.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       )}
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Select metrics</CardTitle>
-          <CardDescription>Choose one or more metrics to include in the CSV</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {METRICS.map((m) => {
-            const on = selected.has(m.key)
-            return (
-              <button
-                key={m.key}
-                type="button"
-                disabled={!canExport}
-                onClick={() => toggleMetric(m.key)}
-                className="flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 data-[selected=true]:border-primary data-[selected=true]:bg-primary/5 hover:bg-accent"
-                data-selected={on}
-              >
-                <div className={`h-4 w-4 shrink-0 rounded border-2 transition-colors ${on ? 'border-primary bg-primary' : 'border-muted-foreground'}`} />
-                <div className="flex-1">
-                  <p className="text-sm font-medium">{m.label}</p>
-                  <p className="text-muted-foreground text-xs">{m.description}</p>
-                </div>
-                {on && <Badge variant="secondary" className="text-xs">included</Badge>}
-              </button>
-            )
-          })}
-        </CardContent>
-      </Card>
-
-      {error && (
-        <p className="text-destructive text-sm">{error}</p>
-      )}
-
-      <div className="flex justify-end">
-        <Button
-          onClick={handleExport}
-          disabled={!canExport || isExporting || selected.size === 0}
-          className="gap-2"
-        >
-          <Download className="h-4 w-4" />
-          {isExporting ? 'Exporting…' : 'Export CSV'}
-        </Button>
-      </div>
     </div>
   )
 }

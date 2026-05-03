@@ -95,13 +95,14 @@ export default function AnalyticsPage() {
                   <TableHead className="text-right">Usage</TableHead>
                   <TableHead className="text-right">Unique Users</TableHead>
                   <TableHead>Trend</TableHead>
+                  <TableHead />
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {featuresLoading ? (
                   Array.from({ length: 6 }).map((_, i) => (
                     <TableRow key={i}>
-                      {Array.from({ length: 5 }).map((_, j) => (
+                      {Array.from({ length: 6 }).map((_, j) => (
                         <TableCell key={j}>
                           <Skeleton className="h-4 w-full" />
                         </TableCell>
@@ -110,7 +111,7 @@ export default function AnalyticsPage() {
                   ))
                 ) : featuresData?.features.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-muted-foreground text-center">
+                    <TableCell colSpan={6} className="text-muted-foreground text-center">
                       No features found
                     </TableCell>
                   </TableRow>
@@ -127,6 +128,14 @@ export default function AnalyticsPage() {
                         <TableCell className="text-right">{formatNumber(f.uniqueUsers)}</TableCell>
                         <TableCell>
                           <SparklineChart data={f.trend} className="w-24" />
+                        </TableCell>
+                        <TableCell>
+                          <Link
+                            href={`/analytics/${f.featureId}`}
+                            className="text-primary hover:underline text-sm"
+                          >
+                            View →
+                          </Link>
                         </TableCell>
                       </TableRow>
                     ))

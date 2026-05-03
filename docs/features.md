@@ -23,17 +23,17 @@
 
 ### F-04 · Dashboard Overview (KPIs)
 - 4 KPI cards: DAU, MAU, Revenue, Conversion Rate
-- Each card shows: current value, % change vs previous period, sparkline
+- Each card shows: current value, % change vs previous period (all 4 wired), sparkline on DAU
 - Line chart: DAU trend over selected date range
 - Bar chart: Top 5 features by usage
-- Date range picker (last 7d / 30d / 90d / custom)
+- Date range picker (last 7d / 30d / 90d)
 - Polling refresh every 30 seconds
 
 ### F-05 · Analytics — Feature Usage
 - Table + bar chart of all features ranked by usage
 - Filter by category
-- Column: feature name, usage count, unique users, trend (sparkline)
-- Click feature → drill-down page
+- Column: feature name, usage count, unique users, trend (sparkline), drill-down link
+- Click feature → drill-down page at `/analytics/[featureId]` (shares event drill-down route)
 
 ### F-06 · Analytics — Custom Events
 - Event list with time-series line chart
@@ -47,8 +47,8 @@
 
 ### F-08 · Reports Export
 - Select metric(s) + date range
-- Export as CSV (client-side generation via papaparse or manual)
-- Export button disabled for viewer role
+- Export as CSV (client-side Blob download from MSW handler)
+- Viewers see a locked state card — metric selection and export button are hidden entirely
 
 ### F-09 · User Management (admin+)
 - Table of users in current org
@@ -60,9 +60,9 @@
 
 ### F-10 · Tenant Management (super_admin only)
 - Table of all tenants
-- Columns: name, plan, user count, created date, status
+- Columns: name, plan, user count, status
 - Toggle tenant active/inactive
-- View tenant details
+- Click row to inline-expand detail panel: slug, plan, member count, created date, primary colour
 
 ### F-11 · Light / Dark Mode
 - Toggle in header (sun/moon icon)

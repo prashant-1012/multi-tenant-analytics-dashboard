@@ -14,10 +14,13 @@ export interface KpiSummary {
   dau: MetricPoint[]
   mau: number
   dauCurrent: number
+  dauGrowth: number
+  mauGrowth: number
   revenue: number
   revenueGrowth: number
   conversions: number
   conversionRate: number
+  conversionRateGrowth: number
   activeFeatures: number
 }
 
