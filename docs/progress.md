@@ -104,9 +104,13 @@
 
 | Task | Status | Notes |
 |---|---|---|
-| User management page | ⬜ | |
-| Tenant management page (super_admin) | ⬜ | |
-| Reports + CSV export page | ⬜ | |
+| User management page | ✅ | `/users` — table with avatar/role/joined; invite dialog (POST); click-role dropdown (PUT); remove button (DELETE); self-edit guarded |
+| Admin Users page | ✅ | `/admin/users` — org selector (all tenants); reads users for selected org via `X-Org-Id` override; read-only view |
+| Tenant management page | ✅ | `/admin/tenants` — table with plan badge, user count, status; activate/deactivate toggle (PUT); super_admin only |
+| Reports + CSV export page | ✅ | `/reports` — metric checkboxes (dau/mau/revenue/conversions/features), date range picker, export triggers download via Blob; manager+ only |
+| Supporting hooks | ✅ | `hooks/useUsers.ts` (useUsers/useInviteUser/useUpdateUserRole/useRemoveUser), `hooks/useTenants.ts` (useTenants/useToggleTenant) |
+| Bug fix — DropdownMenuLabel Base UI context | ✅ | Wrapped `MenuPrimitive.GroupLabel` in `MenuPrimitive.Group` inside `DropdownMenuLabel` — fixes MenuGroupRootContext crash in OrgSwitcher + Header |
+| Production build — all 11 routes | ✅ | `tsc --noEmit` ✅ · `npm run build` ✅ · all routes confirmed |
 
 ---
 
