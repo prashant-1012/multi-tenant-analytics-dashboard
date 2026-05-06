@@ -24,6 +24,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { DateRangePicker } from '@/components/dashboard/DateRangePicker'
+import { ChartSkeleton } from '@/components/shared/ChartSkeleton'
 import { useEventDrillDown, presetToRange, type DatePreset } from '@/hooks/useAnalytics'
 import { formatDate, formatNumber } from '@/lib/utils'
 
@@ -117,7 +118,7 @@ export default function EventDrillDownPage() {
         </CardHeader>
         <CardContent className="pl-2">
           {isLoading ? (
-            <Skeleton className="h-64 w-full" />
+            <ChartSkeleton height={256} type="bar" />
           ) : data ? (
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={data.byDay} margin={{ top: 4, right: 16, left: 0, bottom: 0 }}>

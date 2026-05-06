@@ -99,3 +99,55 @@
 - Custom dashboard builder (drag & drop widgets)
 - SSO / OAuth providers
 - Audit log
+
+---
+
+## Improvements & Enhancements Backlog
+
+Items are grouped by area. We'll tackle them one by one.
+
+### UI / UX Polish
+
+- [x] **I-01** · Skeleton loading states — replace blank flashes on KPI cards, tables, and charts with shimmer skeletons
+- [ ] **I-02** · Empty states — add illustrated empty-state components for tables and charts when there is no data
+- [ ] **I-03** · Toast notifications — surface success / error feedback (role change, invite, export) via a toast system (sonner or Radix Toast)
+- [ ] **I-04** · Responsive / mobile layout — sidebar collapses to a slide-over drawer; header stacks correctly on small screens
+- [ ] **I-05** · Animated KPI card counters — numbers count up on load / refresh for a polished data-reveal feel
+- [ ] **I-06** · Chart tooltips — richer custom tooltips on all Recharts components (value, label, % change)
+- [ ] **I-07** · Confirmation dialogs — "Remove user" and "Deactivate tenant" actions should require an explicit confirm step
+- [ ] **I-08** · Keyboard navigation — sidebar links, org switcher, and dropdowns fully navigable by keyboard with visible focus rings
+
+### Dashboard & Analytics
+
+- [ ] **I-09** · MAU / Revenue / Conversion sparklines — add sparklines to the remaining three KPI cards (DAU already has one)
+- [ ] **I-10** · Comparison mode — toggle to overlay previous-period data on the DAU line chart
+- [ ] **I-11** · Cohort retention table — `/analytics` tab showing weekly retention cohorts in a heat-map table
+- [ ] **I-12** · Funnel chart — visualise a configurable sequence of events as a conversion funnel on the analytics page
+- [ ] **I-13** · Drill-down property filters — on `/analytics/[eventId]`, allow filtering the by-day chart by a property value
+- [ ] **I-14** · Pinned metrics — let admins pin up to 4 custom metrics to the overview page alongside the default KPIs
+
+### Reports
+
+- [ ] **I-15** · Scheduled report config UI — form to configure a named report (metrics + date range + frequency) saved per-tenant
+- [ ] **I-16** · PDF export — generate a printable PDF of the current dashboard view in addition to CSV
+- [ ] **I-17** · Report history table — list of previously exported reports with download links and timestamps
+
+### User & Tenant Management
+
+- [ ] **I-18** · Bulk user actions — checkbox-select multiple users to change role or remove in one operation
+- [ ] **I-19** · User activity column — show "Last active" timestamp in the users table
+- [ ] **I-20** · Tenant usage bar — inline usage bar (users / plan limit) in the tenant table row
+- [ ] **I-21** · Tenant detail side-panel — expand the inline tenant detail into a full right-side drawer with edit support for name, plan, and primary color
+- [ ] **I-22** · Invite via link — generate a shareable invite URL per org (in addition to mock email invite)
+
+### Auth & Security
+
+- [ ] **I-23** · "Remember me" checkbox — extend JWT session TTL when checked
+- [ ] **I-24** · Session expiry banner — show a dismissible warning banner 5 minutes before JWT expiry with a one-click refresh
+- [ ] **I-25** · Password visibility toggle — show/hide icon in the password input on the login form
+
+### Developer / Quality
+
+- [ ] **I-26** · Error boundary — wrap dashboard routes in an `<ErrorBoundary>` that shows a graceful fallback instead of a white screen
+- [ ] **I-27** · Storybook stories — add stories for KpiCard, RoleBadge, OrgSwitcher, and chart components for isolated dev/review
+- [ ] **I-28** · E2E smoke tests — Playwright tests covering login → overview → org switch → logout happy path

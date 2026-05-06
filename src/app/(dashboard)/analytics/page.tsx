@@ -20,6 +20,7 @@ import { FeatureBarChart } from '@/components/charts/FeatureBarChart'
 import { EventLineChart } from '@/components/charts/EventLineChart'
 import { SparklineChart } from '@/components/charts/SparklineChart'
 import { useFeatures, useEvents, presetToRange, type DatePreset } from '@/hooks/useAnalytics'
+import { ChartSkeleton } from '@/components/shared/ChartSkeleton'
 import { formatNumber } from '@/lib/utils'
 import { useDebounce } from '@/hooks/useDebounce'
 
@@ -70,7 +71,7 @@ export default function AnalyticsPage() {
             </CardHeader>
             <CardContent className="pl-2">
               {featuresLoading ? (
-                <Skeleton className="h-64 w-full" />
+                <ChartSkeleton height={256} type="bar" />
               ) : featuresData ? (
                 <FeatureBarChart data={featuresData.features} />
               ) : null}
@@ -153,7 +154,7 @@ export default function AnalyticsPage() {
             </CardHeader>
             <CardContent className="pl-2">
               {eventsLoading ? (
-                <Skeleton className="h-72 w-full" />
+                <ChartSkeleton height={288} type="line" />
               ) : eventsData ? (
                 <EventLineChart events={eventsData.events} />
               ) : null}

@@ -116,9 +116,18 @@ export default function UsersPage() {
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: canManage ? 4 : 3 }).map((_, j) => (
-                    <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
-                  ))}
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="h-8 w-8 rounded-full shrink-0" />
+                      <div className="space-y-1.5 flex-1">
+                        <Skeleton className="h-3.5 w-28" />
+                        <Skeleton className="h-3 w-36" />
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell><Skeleton className="h-5 w-16" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                  {canManage && <TableCell><Skeleton className="h-7 w-7 rounded" /></TableCell>}
                 </TableRow>
               ))
             ) : data?.users.length === 0 ? (

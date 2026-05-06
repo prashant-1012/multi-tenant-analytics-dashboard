@@ -51,9 +51,26 @@ export default function TenantsPage() {
             {isLoading ? (
               Array.from({ length: 3 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 7 }).map((_, j) => (
-                    <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>
-                  ))}
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-6 w-6 rounded-sm shrink-0" />
+                      <div className="space-y-1.5">
+                        <Skeleton className="h-3.5 w-24" />
+                        <Skeleton className="h-3 w-16" />
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell><Skeleton className="h-5 w-16" /></TableCell>
+                  <TableCell className="text-right"><Skeleton className="h-4 w-8 ml-auto" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-4 w-4 rounded-sm" />
+                      <Skeleton className="h-3 w-14" />
+                    </div>
+                  </TableCell>
+                  <TableCell><Skeleton className="h-5 w-14" /></TableCell>
+                  <TableCell><Skeleton className="h-8 w-24 rounded-md" /></TableCell>
                 </TableRow>
               ))
             ) : data?.tenants.length === 0 ? (
