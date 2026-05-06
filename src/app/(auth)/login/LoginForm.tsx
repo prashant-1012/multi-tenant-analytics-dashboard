@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Loader2, BarChart3 } from 'lucide-react'
+import { Loader2, BarChart3, Eye, EyeOff, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 
 const DEMO_ACCOUNTS = [
   { label: 'Super Admin', email: 'admin@example.com' },
@@ -28,10 +29,11 @@ export function LoginForm() {
   const callbackUrl = searchParams.get('callbackUrl') ?? '/overview'
   const urlError = searchParams.get('error')
 
-  const [email, setEmail]     = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError]     = useState<string | null>(
+  const [email, setEmail]         = useState('')
+  const [password, setPassword]   = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading]     = useState(false)
+  const [error, setError]         = useState<string | null>(
     urlError === 'CredentialsSignin' ? 'Invalid email or password.' : null
   )
 
@@ -55,9 +57,12 @@ export function LoginForm() {
     router.push(callbackUrl)
   }
 
+  const selectedDemo = DEMO_ACCOUNTS.find((a) => a.email === email)?.email ?? null
+
   function fillDemo(demoEmail: string) {
     setEmail(demoEmail)
     setPassword('password')
+    setShowPassword(false)
     setError(null)
   }
 
@@ -101,15 +106,27 @@ export function LoginForm() {
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none"
+                    tabIndex={-1}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
 
               {error && (
@@ -134,18 +151,26 @@ export function LoginForm() {
             </CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-2">
-            {DEMO_ACCOUNTS.map((account) => (
-              <Button
-                key={account.email}
-                variant="outline"
-                size="sm"
-                className="justify-start text-xs"
-                onClick={() => fillDemo(account.email)}
-                disabled={loading}
-              >
-                {account.label}
-              </Button>
-            ))}
+            {DEMO_ACCOUNTS.map((account) => {
+              const isSelected = selectedDemo === account.email
+              return (
+                <button
+                  key={account.email}
+                  type="button"
+                  onClick={() => fillDemo(account.email)}
+                  disabled={loading}
+                  className={cn(
+                    'flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                    isSelected
+                      ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+                      : 'border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground'
+                  )}
+                >
+                  <span>{account.label}</span>
+                  {isSelected && <Check className="h-3 w-3 shrink-0" />}
+                </button>
+              )
+            })}
           </CardContent>
         </Card>
       </div>

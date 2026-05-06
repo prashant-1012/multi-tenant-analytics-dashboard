@@ -144,7 +144,7 @@ Items are grouped by area. We'll tackle them one by one.
 
 - [ ] **I-23** · "Remember me" checkbox — extend JWT session TTL when checked
 - [ ] **I-24** · Session expiry banner — show a dismissible warning banner 5 minutes before JWT expiry with a one-click refresh
-- [ ] **I-25** · Password visibility toggle — show/hide icon in the password input on the login form
+- [x] **I-25** · Password visibility toggle — show/hide icon in the password input on the login form
 
 ### Developer / Quality
 
