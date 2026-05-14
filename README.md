@@ -1,5 +1,7 @@
 # Multi-Tenant Analytics Dashboard
 
+**Live Demo:** [analytiq-dashboard.vercel.app](https://analytiq-dashboard.vercel.app)
+
 A production-grade, multi-tenant SaaS analytics dashboard built with Next.js 16 App Router. Each organization sees only their own data. A super admin can observe and manage all tenants from a single login.
 
 Built to demonstrate real-world SaaS patterns: org-scoped data isolation, role-based access control, per-tenant branding, and a clean separation between server state and client state.
