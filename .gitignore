@@ -30,8 +30,15 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files — keep .env.example committed as a safe template
 .env*
+!.env.example
+
+# AI tooling — internal scaffolding, not for public repos
+ai/
+CLAUDE.md
+AGENTS.md
+docs/progress.md
 
 # vercel
 .vercel
